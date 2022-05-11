@@ -28,6 +28,9 @@ in the detailed section referring to by linking pull requests or issues.
 * Add custom Jackson (de)serializer for `XMLGregorianCalendar` (#1226)
 * Add contract validation rule (#1239)
 * Harmonize setting names in `data-plane-transfer` (#1164)
+* Add Blob transfer Architectural Decision Record (#1259)
+* Add component tests coverage to the codecov coverage report (#1246)
+* Postgresql end to end test (#1278)
 
 #### Changed
 
@@ -38,6 +41,9 @@ in the detailed section referring to by linking pull requests or issues.
 * All DMgmt Api methods now produce and consume `APPLICATION_JSON` (#1175)
 * Make data-plane public api controller asynchronous (#1228)
 * Provide In-mem implementations by default (#1130)
+* Changed Catalog config keys and switched from minutes to seconds
+* Uniform all the sql schema files as `docs/schema.sql` (#1278)
+* Clean FCC store before updating
 
 #### Removed
 

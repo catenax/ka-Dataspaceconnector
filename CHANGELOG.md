@@ -58,6 +58,12 @@ in the detailed section referring to by linking pull requests or issues.
 * Fix HTTPS termination in Jetty (#1133)
 * Break lease after TransferProcessManager status check (#1214)
 * Fix path conflicts between `CatalogApiController` and `FederatedCatalogApiController` (#1225)
+* Always use configured IDS API path in IDS webhook address (#1249)
+* Fix Azure storage transfer (#1245)
+* Throw exception if `IdentityProviderKeyResolver` cannot get keys at startup (#1266)
+* Make all the services injectable (#1285)
+* Fix CosmosDB Integration tests (#1313)
+* Remove ContractDef from Cosmos DB cache when deleting (#1330)
 
 ## [milestone-3] - 2022-04-08
 

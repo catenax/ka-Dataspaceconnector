@@ -68,7 +68,7 @@ public class SqlContractDefinitionStore implements ContractDefinitionStore {
 
     @Override
     public @NotNull Collection<ContractDefinition> findAll() {
-        return findAll(QuerySpec.none()).collect(Collectors.toList());
+        return findAll(QuerySpec.Builder.newInstance().offset(0).limit(Integer.MAX_VALUE).build()).collect(Collectors.toList());
     }
 
     @Override

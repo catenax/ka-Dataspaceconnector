@@ -64,7 +64,7 @@ public class InMemoryTransferProcessStore implements TransferProcessStore {
             delete(process.getId());
             TransferProcess internalCopy = process.copy();
             processesById.put(process.getId(), internalCopy);
-            processesByExternalId.put(process.getDataRequest().getId(), internalCopy);
+            processesByExternalId.put(TransferProcessStore.getExternalKey(process), internalCopy);
             stateCache.computeIfAbsent(process.getState(), k -> new ArrayList<>()).add(internalCopy);
             return null;
         });
@@ -75,7 +75,7 @@ public class InMemoryTransferProcessStore implements TransferProcessStore {
         lockManager.writeLock(() -> {
             delete(process.getId());
             TransferProcess internalCopy = process.copy();
-            processesByExternalId.put(process.getDataRequest().getId(), internalCopy);
+            processesByExternalId.put(TransferProcessStore.getExternalKey(process), internalCopy);
             processesById.put(process.getId(), internalCopy);
             stateCache.computeIfAbsent(process.getState(), k -> new ArrayList<>()).add(internalCopy);
             return null;
@@ -94,7 +94,7 @@ public class InMemoryTransferProcessStore implements TransferProcessStore {
                 });
                 stateCache.clear();
                 stateCache.putAll(tempCache);
-                processesByExternalId.remove(process.getDataRequest().getId());
+                processesByExternalId.remove(TransferProcessStore.getExternalKey(process));
             }
             return null;
         });

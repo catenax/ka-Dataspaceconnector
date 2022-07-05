@@ -27,6 +27,27 @@ import java.util.stream.Stream;
 public interface TransferProcessStore extends StateEntityStore<TransferProcess> {
 
     /**
+     * compute an externalized key for a given transfer process
+     *
+     * @param process whose external key should be generated
+     * @return externallized key
+     */
+    static String getExternalKey(TransferProcess process) {
+        return getExternalKey(process.getType(), process.getDataRequest().getId());
+    }
+
+    /**
+     * compute an externalized key
+     *
+     * @param type of the transfer process
+     * @param transferId of the transfer process
+     * @return externalized key
+     */
+    static String getExternalKey(TransferProcess.Type type, String transferId) {
+        return type + "." + transferId;
+    }
+
+    /**
      * Returns the transfer process for the id or null if not found.
      */
     @Nullable

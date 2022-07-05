@@ -185,7 +185,7 @@ public class TransferProcessManagerImpl implements TransferProcessManager, Provi
 
     private StatusResult<String> initiateRequest(TransferProcess.Type type, DataRequest dataRequest) {
         // make the request idempotent: if the process exists, return
-        var processId = transferProcessStore.processIdForTransferId(dataRequest.getId());
+        var processId = transferProcessStore.processIdForTransferId(TransferProcessStore.getExternalKey(type, dataRequest.getId()));
         if (processId != null) {
             return StatusResult.success(processId);
         }

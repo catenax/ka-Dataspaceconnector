@@ -38,7 +38,7 @@ val swagger: String by project
 val faker: String by project
 
 val groupId: String = "org.eclipse.dataspaceconnector"
-var edcVersion: String = "0.0.1-SNAPSHOT"
+var edcVersion: String = "0.0.3-CATENAX"
 
 if (project.version == "unspecified") {
     logger.warn("No version was specified, setting default 0.0.1-SNAPSHOT")

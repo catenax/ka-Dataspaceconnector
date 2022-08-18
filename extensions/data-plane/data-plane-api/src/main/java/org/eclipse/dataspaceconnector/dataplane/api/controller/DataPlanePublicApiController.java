@@ -120,11 +120,16 @@ public class DataPlanePublicApiController {
     }
 
     private void handle(ContainerRequestContext requestContext, AsyncResponse response) {
+
+        monitor.info("About to handle a request to " + requestContext);
+
         var bearerToken = requestContextApi.authHeader(requestContext);
         if (bearerToken == null) {
             response.resume(notAuthorizedErrors(List.of("Missing bearer token")));
             return;
         }
+
+        monitor.info("Found a bearer token " + bearerToken);
 
         var tokenValidationResult = tokenValidationService.validate(bearerToken);
         if (tokenValidationResult.failed()) {

@@ -76,6 +76,9 @@ public class HttpDataSource implements DataSource {
     private HttpPart getPart() {
         var url = createUrl();
         var requestBody = hasValidRequestBody() ? RequestBody.create(body, mediaType) : null;
+
+        monitor.debug("About to build a request to url " + url + " using headers " + headers.keySet().stream().collect(java.util.stream.Collectors.joining(",")) + " and request body " + requestBody);
+
         var requestBuilder = new Request.Builder()
                 .url(url)
                 .method(method, requestBody);

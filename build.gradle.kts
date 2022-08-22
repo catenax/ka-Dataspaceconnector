@@ -41,7 +41,7 @@ val groupId: String = "org.eclipse.dataspaceconnector"
 var edcVersion: String = "0.0.4-KA"
 
 if (project.version == "unspecified") {
-    logger.warn("No version was specified, setting default 0.0.1-SNAPSHOT")
+    logger.warn("No version was specified, setting default "+edcVersion)
     logger.warn("If you want to change this, supply the -Pversion=X.Y.Z parameter")
     logger.warn("")
 } else {

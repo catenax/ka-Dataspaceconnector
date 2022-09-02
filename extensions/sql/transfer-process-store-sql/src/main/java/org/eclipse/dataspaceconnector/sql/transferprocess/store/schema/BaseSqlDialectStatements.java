@@ -63,10 +63,10 @@ public abstract class BaseSqlDialectStatements implements TransferProcessStoreSt
 
     @Override
     public String getProcessIdForTransferIdTemplate() {
-        return format("SELECT * FROM %s WHERE %s.%s = (SELECT %s FROM %s WHERE %s.%s = ?);",
+        return format("SELECT * FROM %s WHERE %s.%s = (SELECT %s FROM %s WHERE %s.%s = ?) AND %s.%s = ?;",
                 getTransferProcessTableName(), getTransferProcessTableName(),
                 getIdColumn(), getTransferProcessIdFkColumn(),
-                getDataRequestTable(), getDataRequestTable(), getProcessIdColumn());
+                getDataRequestTable(), getDataRequestTable(), getProcessIdColumn(), getTransferProcessTableName(), getTypeColumn());
     }
 
     @Override

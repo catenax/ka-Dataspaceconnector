@@ -125,7 +125,7 @@ allprojects {
             repositories {
                 maven {
                     name = "GitHubPackages"
-                    url = uri("https://maven.pkg.github.com/eclipse-dataspaceconnector/DataSpaceConnector")
+                    url = uri("https://maven.pkg.github.com/catenax/ka-DataSpaceConnector")
                     credentials {
                         username = System.getenv("GITHUB_ACTOR")
                         password = System.getenv("GITHUB_TOKEN")

@@ -58,7 +58,7 @@ val defaultVersion: String by project
 // required by the nexus publishing plugin
 val projectVersion: String = (project.findProperty("edcVersion") ?: defaultVersion) as String
 
-var deployUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+var deployUrl = "https://maven.pkg.github.com/catenax/ka-DataSpaceConnector"
 
 if (projectVersion.contains("SNAPSHOT")) {
     deployUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -179,23 +179,21 @@ allprojects {
         if (!project.hasProperty("skip.signing")) {
 
             apply(plugin = "signing")
+
+        }else{
             publishing {
                 repositories {
                     maven {
-                        name = "OSSRH"
+                        name = "GitHubPackages"
                         setUrl(deployUrl)
                         credentials {
-                            username = System.getenv("OSSRH_USER") ?: return@credentials
-                            password = System.getenv("OSSRH_PASSWORD") ?: return@credentials
+                            username = System.getenv("GITHUB_ACTOR") ?: return@credentials
+                            password = System.getenv("GITHUB_TOKEN") ?: return@credentials
                         }
                     }
                 }
-
-                signing {
-                    useGpgCmd()
-                    sign(publishing.publications)
-                }
             }
+
         }
 
     }

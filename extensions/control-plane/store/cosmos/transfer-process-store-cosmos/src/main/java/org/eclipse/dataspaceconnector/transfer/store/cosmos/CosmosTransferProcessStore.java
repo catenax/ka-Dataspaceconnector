@@ -106,8 +106,8 @@ public class CosmosTransferProcessStore implements TransferProcessStore {
 
     @Override
     public @Nullable
-    String processIdForDataRequestId(String transferId) {
-        var query = "SELECT * FROM t WHERE t.wrappedInstance.dataRequest.id = '" + transferId + "'";
+    String processIdForDataRequestId(String transferId, TransferProcess.Type type) {
+        var query = "SELECT * FROM t WHERE t.wrappedInstance.dataRequest.id = '" + transferId + "' AND t.wrappedInstance.type = '" +type.toString()+"'";
         var response = failsafeExecutor.get(() -> cosmosDbApi.queryItems(query));
         return response
                 .map(this::convertToDocument)

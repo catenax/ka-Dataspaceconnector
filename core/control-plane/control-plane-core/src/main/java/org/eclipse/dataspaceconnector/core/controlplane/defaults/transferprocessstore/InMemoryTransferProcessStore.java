@@ -34,9 +34,9 @@ public class InMemoryTransferProcessStore implements TransferProcessStore {
 
     @Override
     @Nullable
-    public String processIdForTransferId(String id) {
+    public String processIdForTransferId(String id, TransferProcess.Type type) {
         return store.findAll()
-                .filter(p -> id.equals(p.getDataRequest().getId()))
+                .filter(p -> id.equals(p.getDataRequest().getId()) && type.equals(p.getType()))
                 .findFirst()
                 .map(TransferProcess::getId)
                 .orElse(null);

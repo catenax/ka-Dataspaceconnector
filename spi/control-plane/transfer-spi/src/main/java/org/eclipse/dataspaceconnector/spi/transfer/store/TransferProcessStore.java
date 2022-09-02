@@ -33,7 +33,9 @@ public interface TransferProcessStore extends StateEntityStore<TransferProcess> 
     TransferProcess find(String id);
 
     /**
-     * Returns the transfer process for the data request id or null if not found.
+     * Returns the transfer process for the data request id and the fitting type 
+     * (because a connector calling itself needs at least two transfer processes of type CLIENT/CONSUMER and SERVER/PRODUCER for the same request id) 
+     * or null if not found.
      */
     @Nullable
     String processIdForDataRequestId(String id, TransferProcess.Type type);

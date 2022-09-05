@@ -24,7 +24,6 @@ plugins {
     id("org.eclipse.dataspaceconnector.module-names")
     id("com.autonomousapps.dependency-analysis") version "1.13.1" apply (false)
     id("org.gradle.crypto.checksum") version "1.4.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("org.hidetake.swagger.generator") version "2.19.2"
 }
 
@@ -61,7 +60,7 @@ val projectVersion: String = (project.findProperty("edcVersion") ?: defaultVersi
 var deployUrl = "https://maven.pkg.github.com/catenax/ka-DataSpaceConnector"
 
 if (projectVersion.contains("SNAPSHOT")) {
-    deployUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+    deployUrl = "https://maven.pkg.github.com/catenax/ka-DataSpaceConnector"
 }
 
 subprojects {
@@ -176,24 +175,18 @@ allprojects {
             testImplementation("org.assertj:assertj-core:${assertj}")
         }
 
-        if (!project.hasProperty("skip.signing")) {
 
-            apply(plugin = "signing")
-
-        }else{
-            publishing {
-                repositories {
-                    maven {
-                        name = "GitHubPackages"
-                        setUrl(deployUrl)
-                        credentials {
-                            username = System.getenv("GITHUB_ACTOR") ?: return@credentials
-                            password = System.getenv("GITHUB_TOKEN") ?: return@credentials
-                        }
+        publishing {
+            repositories {
+                maven {
+                    name = "GitHubPackages"
+                    setUrl(deployUrl)
+                    credentials {
+                        username = System.getenv("GITHUB_ACTOR") ?: return@credentials
+                        password = System.getenv("GITHUB_TOKEN") ?: return@credentials
                     }
                 }
             }
-
         }
 
     }
@@ -351,17 +344,6 @@ if (project.hasProperty("dependency.analysis")) {
                     "io\\.opentelemetry\\.extension\\.annotations\\.WithSpan",
                 )
             }
-        }
-    }
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://oss.sonatype.org/content/repositories/snapshots/"))
-            username.set(System.getenv("OSSRH_USER") ?: return@sonatype)
-            password.set(System.getenv("OSSRH_PASSWORD") ?: return@sonatype)
         }
     }
 }

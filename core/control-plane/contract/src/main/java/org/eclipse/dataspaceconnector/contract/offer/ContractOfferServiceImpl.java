@@ -35,8 +35,12 @@ import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import java.util.regex.Pattern;
+
 /**
  * Implementation of the {@link ContractOfferService}.
+ * Computes the offers by bringing together assets and
+ * contractdefinitions by means of their contract policy
  */
 public class ContractOfferServiceImpl implements ContractOfferService {
     private final ParticipantAgentService agentService;
@@ -61,7 +65,18 @@ public class ContractOfferServiceImpl implements ContractOfferService {
                     var assets = assetIndex.queryAssets(definition.getSelectorExpression());
                     return Optional.of(definition.getContractPolicyId())
                             .map(policyStore::findById)
-                            .map(policy -> assets.map(asset -> createContractOffer(definition, policy.getPolicy(), asset)))
+                            .map(policy -> {
+                                // check policy target for compliance with the asset id
+                                final Pattern targetPattern=policy.getPolicy().getTarget()!=null ?
+                                        Pattern.compile(policy.getPolicy().getTarget()) : null;
+                                return assets.flatMap(asset -> {
+                                    if(targetPattern==null || targetPattern.matcher(asset.getId()).matches()) {
+                                        return Stream.of(createContractOffer(definition, policy.getPolicy(), asset));
+                                    } else {
+                                        return Stream.empty();
+                                    }
+                                });
+                            })
                             .orElseGet(Stream::empty);
                 });
     }
@@ -69,7 +84,7 @@ public class ContractOfferServiceImpl implements ContractOfferService {
     @NotNull
     private ContractOffer createContractOffer(ContractDefinition definition, Policy policy, Asset asset) {
         return ContractOffer.Builder.newInstance()
-                .id(ContractId.createContractId(definition.getId()))
+                .id(ContractId.createContractId(definition.getId(),asset.getId()))
                 .policy(policy.withTarget(asset.getId()))
                 .asset(asset)
                 // TODO: this is a workaround for the bug described in https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/753

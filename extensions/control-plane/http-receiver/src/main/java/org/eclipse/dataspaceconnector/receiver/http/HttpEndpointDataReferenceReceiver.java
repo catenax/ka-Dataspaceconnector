@@ -36,11 +36,12 @@ import static org.eclipse.dataspaceconnector.common.string.StringUtils.isNullOrB
 
 /**
  * Implementation of a {@link org.eclipse.dataspaceconnector.spi.transfer.edr.EndpointDataReferenceReceiver} that posts
- * the {@link org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference} to an existing http endpoint.
+ * the {@link org.eclipse.dataspaceconnector.spi.types.domain.edr.EndpointDataReference} to one or more existing http endpoint.
  */
 public class HttpEndpointDataReferenceReceiver implements EndpointDataReferenceReceiver {
 
     private static final MediaType JSON = MediaType.get("application/json");
+    public static final String SPEC_SEPARATOR=" ";
 
     private Monitor monitor;
     private OkHttpClient httpClient;
@@ -53,24 +54,45 @@ public class HttpEndpointDataReferenceReceiver implements EndpointDataReferenceR
     private HttpEndpointDataReferenceReceiver() {
     }
 
+
+    /**
+     * registers the data reference with all endpoints
+     * and passes back any problems
+     * @param edr data reference
+     * @return async result
+     */
     @Override
     public CompletableFuture<Result<Void>> send(@NotNull EndpointDataReference edr) {
         var requestBody = RequestBody.create(typeManager.writeValueAsString(edr), JSON);
-        var requestBuilder = new Request.Builder().url(endpoint).post(requestBody);
-        if (!isNullOrBlank(authKey) && !isNullOrBlank(authToken)) {
-            requestBuilder.header(authKey, authToken);
+        String[] finalEndpoint=endpoint.split(SPEC_SEPARATOR);
+        String[] finalAuthKey=endpoint.split(SPEC_SEPARATOR);
+        String[] finalAuthToken=endpoint.split(SPEC_SEPARATOR);
+        if(finalAuthKey.length!=finalAuthToken.length) {
+            throw new EdcException(format("Number of auth keys does not match number of auth codes: %s %s", finalAuthKey.length, finalAuthToken.length));
         }
-        try (var response = with(retryPolicy).get(() -> httpClient.newCall(requestBuilder.build()).execute())) {
-            if (response.isSuccessful()) {
-                var body = response.body();
-                if (body == null) {
-                    throw new EdcException(format("Received empty response body when receiving endpoint data reference at uri: %s", endpoint));
+        boolean success=true;
+        for(int count=0;count<finalEndpoint.length;count++) {
+            var requestBuilder = new Request.Builder().url(finalEndpoint[count]).post(requestBody);
+            if (finalAuthKey.length > count && !isNullOrBlank(finalAuthKey[count]) && !isNullOrBlank(finalAuthToken[count])) {
+                requestBuilder.header(finalAuthKey[count], finalAuthToken[count]);
+            }
+            try (var response = with(retryPolicy).get(() -> httpClient.newCall(requestBuilder.build()).execute())) {
+                if (response.isSuccessful()) {
+                    var body = response.body();
+                    if (body == null) {
+                        monitor.severe(format("Received empty response body when receiving endpoint data reference at uri: %s", finalEndpoint[count]));
+                        success=false;
+                    }
+                } else {
+                    monitor.severe(format("Received error code %s when transferring endpoint data reference at uri: %s", response.code(), finalEndpoint[count]));
+                    success=false;
                 }
-                return CompletableFuture.completedFuture(Result.success());
-            } else {
-                throw new EdcException(format("Received error code %s when transferring endpoint data reference at uri: %s", response.code(), endpoint));
             }
         }
+        if(!success) {
+            throw new EdcException("Endpoint data reference could not be delivered.");
+        }
+        return CompletableFuture.completedFuture(Result.success());
     }
 
     public static class Builder {

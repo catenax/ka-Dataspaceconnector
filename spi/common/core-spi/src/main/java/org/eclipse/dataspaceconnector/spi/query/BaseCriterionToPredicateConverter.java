@@ -20,6 +20,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 
 /**
  * Converts a {@link Criterion} into a {@link Predicate} of any given type.
@@ -38,6 +41,8 @@ public abstract class BaseCriterionToPredicateConverter<T> implements CriterionC
                 return equalPredicate(criterion);
             case "in":
                 return inPredicate(criterion);
+            case "~":
+                return regexPredicate(criterion);
             default:
                 throw new IllegalArgumentException(String.format("Operator [%s] is not supported by this converter!", criterion.getOperator()));
         }
@@ -80,6 +85,39 @@ public abstract class BaseCriterionToPredicateConverter<T> implements CriterionC
             }
 
 
+        };
+    }
+
+    /**
+     * implements a regex criterion
+     * by matching the string representation of
+     * a left hand operand against a regex pattern
+     * @param criterion representation
+     * @return regex predicate
+     */
+    @NotNull
+    private Predicate<T> regexPredicate(Criterion criterion) {
+        return t -> {
+            Object property = property((String) criterion.getOperandLeft(), t);
+            if (property == null) {
+                return false; //property does not exist on t
+            }
+            var rightOp = criterion.getOperandRight();
+            Pattern pattern = null;
+
+            try {
+                if(rightOp instanceof java.util.regex.Pattern) {
+                    pattern=(Pattern) rightOp;
+                } else if (rightOp instanceof String) {
+                    pattern = Pattern.compile((String) rightOp);
+                }
+                if(pattern!=null) {
+                    return pattern.matcher(String.valueOf(property)).matches();
+                }
+            } catch(PatternSyntaxException e) {
+                throw new IllegalArgumentException("Operator ~ the right-hand operand %s is not a valid regular expression." + rightOp.getClass().getName(),e);
+            }
+            throw new IllegalArgumentException("Operator ~ requires the right-hand operand to be a regular expression but was " + rightOp.getClass().getName());
         };
     }
 

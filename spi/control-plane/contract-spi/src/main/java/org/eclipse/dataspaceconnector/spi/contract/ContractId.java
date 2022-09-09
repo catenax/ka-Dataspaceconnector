@@ -28,11 +28,15 @@ public final class ContractId {
     private static final String DELIMITER = ":";
 
     /**
-     * Returns a UUID that references the definition id.
+     * Returns a UUID that references the definition id and
+     * is based on an asset id
+     * @param definitionPart id of the contract definition
+     * @param assetPart id of the offered asset
+     * @return unique string
      */
     @NotNull
-    public static String createContractId(String definitionPart) {
-        return definitionPart + DELIMITER + UUID.randomUUID();
+    public static String createContractId(String definitionPart, String assetPart) {
+        return  definitionPart + DELIMITER + UUID.nameUUIDFromBytes(assetPart.getBytes());
     }
 
     /**

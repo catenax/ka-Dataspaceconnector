@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static java.lang.String.format;
 import static org.eclipse.dataspaceconnector.transfer.dataplane.spi.DataPlaneTransferConstants.CONTRACT_ID;
+import static org.eclipse.dataspaceconnector.transfer.dataplane.spi.DataPlaneTransferConstants.PROTOCOL_ID;
 
 /**
  * Transforms {@link EndpointDataReference} returned by the provider Control Plane so that
@@ -76,14 +77,21 @@ public class DataPlaneTransferConsumerProxyTransformer implements EndpointDataRe
     }
 
     private static DataAddress toHttpDataAddress(EndpointDataReference edr) {
-        return HttpDataAddress.Builder.newInstance()
+        DataAddress.Builder addressBuilder= HttpDataAddress.Builder.newInstance()
                 .baseUrl(edr.getEndpoint())
                 .authKey(edr.getAuthKey())
                 .authCode(edr.getAuthCode())
                 .proxyBody(Boolean.TRUE.toString())
                 .proxyPath(Boolean.TRUE.toString())
                 .proxyMethod(Boolean.TRUE.toString())
-                .proxyQueryParams(Boolean.TRUE.toString())
-                .build();
+                .proxyQueryParams(Boolean.TRUE.toString());
+        // CGJ per standard, the type of HttpDataAddress will be "HttpData"
+        // check if the edr has additionally a sub-protocol type
+        var protocol = edr.getProperties().get(PROTOCOL_ID);
+        if (protocol != null) {
+            // set sub-protocol
+            addressBuilder=addressBuilder.type(protocol);
+        }
+        return addressBuilder.build();
     }
 }

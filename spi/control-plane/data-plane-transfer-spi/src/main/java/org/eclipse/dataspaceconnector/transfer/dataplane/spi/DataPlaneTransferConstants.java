@@ -34,4 +34,9 @@ public interface DataPlaneTransferConstants {
      * Claim of the token used in input of Data Plane public API containing the contract id.
      */
     String CONTRACT_ID = "cid";
+
+    /**
+     * Claim of the token used in input of Data Plane public API containing the application protocol.
+     */
+    String PROTOCOL_ID = "protocol";
 }

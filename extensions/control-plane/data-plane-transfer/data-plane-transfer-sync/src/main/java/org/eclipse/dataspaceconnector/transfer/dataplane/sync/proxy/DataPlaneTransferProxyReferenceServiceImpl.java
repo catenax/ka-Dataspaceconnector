@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import static org.eclipse.dataspaceconnector.transfer.dataplane.spi.DataPlaneTransferConstants.CONTRACT_ID;
+import static org.eclipse.dataspaceconnector.transfer.dataplane.spi.DataPlaneTransferConstants.PROTOCOL_ID;
 
 public class DataPlaneTransferProxyReferenceServiceImpl implements DataPlaneTransferProxyReferenceService {
 
@@ -61,6 +62,9 @@ public class DataPlaneTransferProxyReferenceServiceImpl implements DataPlaneTran
 
         var props = new HashMap<>(request.getProperties());
         props.put(CONTRACT_ID, request.getContractId());
+        // CGJ expose the sub-protocol (standard: HttpData)
+        // for clients to set the request type correctly
+        props.put(PROTOCOL_ID, request.getContentAddress().getType());
 
         var builder = EndpointDataReference.Builder.newInstance()
                 .id(request.getId())

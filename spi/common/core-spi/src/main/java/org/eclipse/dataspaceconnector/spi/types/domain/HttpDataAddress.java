@@ -226,7 +226,10 @@ public class HttpDataAddress extends DataAddress {
 
         @Override
         public HttpDataAddress build() {
-            this.type(DATA_TYPE);
+            // CGJ I know this seems to enforce certain things
+            // but it hinders any sub-protocols to HttpData for also using
+            // the HttpProxy transfer
+            // this.type(DATA_TYPE);
             return (HttpDataAddress) address;
         }
     }

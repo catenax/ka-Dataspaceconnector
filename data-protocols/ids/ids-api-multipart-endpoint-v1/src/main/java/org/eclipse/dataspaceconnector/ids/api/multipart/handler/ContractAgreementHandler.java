@@ -22,6 +22,7 @@ import org.eclipse.dataspaceconnector.ids.api.multipart.message.MultipartRespons
 import org.eclipse.dataspaceconnector.ids.spi.transform.ContractAgreementTransformerOutput;
 import org.eclipse.dataspaceconnector.ids.spi.transform.ContractTransformerInput;
 import org.eclipse.dataspaceconnector.ids.spi.transform.IdsTransformerRegistry;
+import org.eclipse.dataspaceconnector.ids.spi.types.IdsId;
 import org.eclipse.dataspaceconnector.spi.contract.negotiation.ConsumerContractNegotiationManager;
 import org.eclipse.dataspaceconnector.spi.monitor.Monitor;
 import org.eclipse.dataspaceconnector.spi.types.domain.asset.Asset;
@@ -84,7 +85,18 @@ public class ContractAgreementHandler implements Handler {
 
         // search for matching asset
         // TODO remove fake asset (description request to fetch original metadata --> store/cache)
-        var asset = Asset.Builder.newInstance().id(String.valueOf(permission.getTarget())).build();
+        // CGJ until then, we need to ensure that the deserialized asset id in the permission
+        // is indeed "un-ids"-ed, otherwise consumer and producer agreement have different assetids
+        // and the scenario producer=consumer runs into asset lookup problems afterwards.
+        var assetResult = IdsId.from(String.valueOf(permission.getTarget()));
+        if (assetResult.failed()) {
+            var msg = "Target id is missing";
+            monitor.debug(String.format("ContractAgreementHandler: %s", msg));
+            return createMultipartResponse(badParameters(message, connectorId), msg);
+        }
+
+        var assetId = assetResult.getContent();
+        var asset = Asset.Builder.newInstance().id(assetId.getValue()).build();
 
         // Create contract offer request
         var input = ContractTransformerInput.Builder.newInstance()

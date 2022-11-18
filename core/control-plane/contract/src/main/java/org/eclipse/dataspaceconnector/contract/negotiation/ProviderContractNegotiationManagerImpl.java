@@ -351,7 +351,7 @@ public class ProviderContractNegotiationManagerImpl extends AbstractContractNego
             policy = lastOffer.getPolicy();
             //TODO move to own service
             agreement = ContractAgreement.Builder.newInstance()
-                    .id(ContractId.createContractId(definitionId,lastOffer.getAsset().getId()))
+                    .id(ContractId.createContractId(definitionId, lastOffer.getAsset().getId()))
                     .contractStartDate(clock.instant().getEpochSecond())
                     .contractEndDate(clock.instant().plus(365, ChronoUnit.DAYS).getEpochSecond()) // TODO Make configurable (issue #722)
                     .contractSigningDate(clock.instant().getEpochSecond())

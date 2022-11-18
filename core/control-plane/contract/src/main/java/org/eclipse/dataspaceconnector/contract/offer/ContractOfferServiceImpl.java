@@ -33,9 +33,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import java.util.regex.Pattern;
 
 /**
  * Implementation of the {@link ContractOfferService}.
@@ -67,10 +67,10 @@ public class ContractOfferServiceImpl implements ContractOfferService {
                             .map(policyStore::findById)
                             .map(policy -> {
                                 // check policy target for compliance with the asset id
-                                final Pattern targetPattern=policy.getPolicy().getTarget()!=null ?
+                                final Pattern targetPattern = policy.getPolicy().getTarget() != null ?
                                         Pattern.compile(policy.getPolicy().getTarget()) : null;
                                 return assets.flatMap(asset -> {
-                                    if(targetPattern==null || targetPattern.matcher(asset.getId()).matches()) {
+                                    if (targetPattern == null || targetPattern.matcher(asset.getId()).matches()) {
                                         return Stream.of(createContractOffer(definition, policy.getPolicy(), asset));
                                     } else {
                                         return Stream.empty();
@@ -84,7 +84,7 @@ public class ContractOfferServiceImpl implements ContractOfferService {
     @NotNull
     private ContractOffer createContractOffer(ContractDefinition definition, Policy policy, Asset asset) {
         return ContractOffer.Builder.newInstance()
-                .id(ContractId.createContractId(definition.getId(),asset.getId()))
+                .id(ContractId.createContractId(definition.getId(), asset.getId()))
                 .policy(policy.withTarget(asset.getId()))
                 .asset(asset)
                 // TODO: this is a workaround for the bug described in https://github.com/eclipse-dataspaceconnector/DataSpaceConnector/issues/753

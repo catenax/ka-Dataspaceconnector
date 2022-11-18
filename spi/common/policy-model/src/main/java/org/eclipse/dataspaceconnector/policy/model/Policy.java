@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -119,22 +119,25 @@ public class Policy {
     public Policy withTarget(String target) {
         return Builder.newInstance()
                 .prohibitions(prohibitions.stream().flatMap(p -> {
-                    if (p.getTarget() == null || Pattern.compile(p.getTarget()).matcher(target).matches())
+                    if (p.getTarget() == null || Pattern.compile(p.getTarget()).matcher(target).matches()) {
                         return Stream.of(p.withTarget(target));
-                    else
+                    } else {
                         return Stream.empty();
+                    }
                 }).collect(Collectors.toList()))
                 .permissions(permissions.stream().flatMap(p -> {
-                    if (p.getTarget() == null || Pattern.compile(p.getTarget()).matcher(target).matches())
+                    if (p.getTarget() == null || Pattern.compile(p.getTarget()).matcher(target).matches()) {
                         return Stream.of(p.withTarget(target));
-                    else
+                    } else {
                         return Stream.empty();
+                    }
                 }).collect(Collectors.toList()))
                 .duties(obligations.stream().flatMap(o -> {
-                    if (o.getTarget() == null || Pattern.compile(o.getTarget()).matcher(target).matches())
+                    if (o.getTarget() == null || Pattern.compile(o.getTarget()).matcher(target).matches()) {
                         return Stream.of(o.withTarget(target));
-                    else
+                    } else {
                         return Stream.empty();
+                    }
                 }).collect(Collectors.toList()))
                 .assigner(assigner)
                 .assignee(assignee)

@@ -36,7 +36,7 @@ public class HttpEndpointDataReferenceReceiverExtension implements ServiceExtens
     @EdcSetting
     private static final String HTTP_RECEIVER_AUTH_CODE = "edc.receiver.http.auth-code";
 
-    public static final String SPEC_SEPARATOR=",";
+    public static final String SPEC_SEPARATOR = ",";
 
     @Inject
     private EndpointDataReferenceReceiverRegistry receiverRegistry;
@@ -62,36 +62,36 @@ public class HttpEndpointDataReferenceReceiverExtension implements ServiceExtens
         var authKey = context.getSetting(HTTP_RECEIVER_AUTH_KEY, null);
         var authCode = context.getSetting(HTTP_RECEIVER_AUTH_CODE, null);
 
-        Monitor monitor= context.getMonitor();
+        Monitor monitor = context.getMonitor();
 
-        monitor.debug(String.format("Elaborating http endpoint receiver spec %s",endpoint));
+        monitor.debug(String.format("Elaborating http endpoint receiver spec %s", endpoint));
 
-        var endpoints=endpoint.split(",");
-        var authKeys= new String[0];
-        if(authKey!=null) {
-            authKeys=authKey.split(",");
+        var endpoints = endpoint.split(",");
+        var authKeys = new String[0];
+        if (authKey != null) {
+            authKeys = authKey.split(",");
         }
-        var authCodes= new String[0];
-        if(authCode!=null) {
-            authCodes=authCode.split(",");
+        var authCodes = new String[0];
+        if (authCode != null) {
+            authCodes = authCode.split(",");
         }
 
-        if(authKeys.length!=authCodes.length) {
-            throw new EdcException(String.format("Length of endpoints %d auth keys %d and auth codes %d do not match", endpoints.length,authKeys.length,authCodes.length));
+        if (authKeys.length != authCodes.length) {
+            throw new EdcException(String.format("Length of endpoints %d auth keys %d and auth codes %d do not match", endpoints.length, authKeys.length, authCodes.length));
         }
-        if(authKeys.length<endpoints.length) {
-            monitor.warning(String.format("There are %d endpoints but only %d authorization infos. Omitting authorization for endpoints %d to %d.",endpoints.length,authKeys.length,authKeys.length+1,endpoints.length));
+        if (authKeys.length < endpoints.length) {
+            monitor.warning(String.format("There are %d endpoints but only %d authorization infos. Omitting authorization for endpoints %d to %d.", endpoints.length, authKeys.length, authKeys.length + 1, endpoints.length));
         }
-        for(int count=0;count<endpoints.length;count++) {
-            monitor.debug(String.format("About to build and register new http endpoint receiver number %d for address %s",count,endpoints[count]));
-            String theEndpoint=endpoints[count];
-            String theKey="";
-            String theCode="";
-            if(authKeys.length>count) {
-                theKey=authKeys[count];
-                theCode=authCodes[count];
+        for (int count = 0; count < endpoints.length; count++) {
+            monitor.debug(String.format("About to build and register new http endpoint receiver number %d for address %s", count, endpoints[count]));
+            String theEndpoint = endpoints[count];
+            String theKey = "";
+            String theCode = "";
+            if (authKeys.length > count) {
+                theKey = authKeys[count];
+                theCode = authCodes[count];
             }
-            var receiver = HttpEndpointDataReferenceReceiver.Builder.newInstance()
+            var receiver  = HttpEndpointDataReferenceReceiver.Builder.newInstance()
                     .endpoint(theEndpoint)
                     .authHeader(theKey, theCode)
                     .httpClient(httpClient)

@@ -77,7 +77,7 @@ public class DataPlaneTransferConsumerProxyTransformer implements EndpointDataRe
     }
 
     private static DataAddress toHttpDataAddress(EndpointDataReference edr) {
-        DataAddress.Builder addressBuilder= HttpDataAddress.Builder.newInstance()
+        DataAddress.Builder addressBuilder = HttpDataAddress.Builder.newInstance()
                 .baseUrl(edr.getEndpoint())
                 .authKey(edr.getAuthKey())
                 .authCode(edr.getAuthCode())
@@ -90,7 +90,7 @@ public class DataPlaneTransferConsumerProxyTransformer implements EndpointDataRe
         var protocol = edr.getProperties().get(PROTOCOL_ID);
         if (protocol != null) {
             // set sub-protocol
-            addressBuilder=addressBuilder.type(protocol);
+            addressBuilder = addressBuilder.type(protocol);
         }
         return addressBuilder.build();
     }

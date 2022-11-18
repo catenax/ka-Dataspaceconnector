@@ -30,6 +30,7 @@ public final class ContractId {
     /**
      * Returns a UUID that references the definition id and
      * is based on an asset id
+     *
      * @param definitionPart id of the contract definition
      * @param assetPart id of the offered asset
      * @return unique string

@@ -92,6 +92,7 @@ public abstract class BaseCriterionToPredicateConverter<T> implements CriterionC
      * implements a regex criterion
      * by matching the string representation of
      * a left hand operand against a regex pattern
+     *
      * @param criterion representation
      * @return regex predicate
      */
@@ -106,16 +107,16 @@ public abstract class BaseCriterionToPredicateConverter<T> implements CriterionC
             Pattern pattern = null;
 
             try {
-                if(rightOp instanceof java.util.regex.Pattern) {
-                    pattern=(Pattern) rightOp;
+                if (rightOp instanceof java.util.regex.Pattern) {
+                    pattern = (Pattern) rightOp;
                 } else if (rightOp instanceof String) {
                     pattern = Pattern.compile((String) rightOp);
                 }
-                if(pattern!=null) {
+                if (pattern != null) {
                     return pattern.matcher(String.valueOf(property)).matches();
                 }
-            } catch(PatternSyntaxException e) {
-                throw new IllegalArgumentException("Operator ~ the right-hand operand %s is not a valid regular expression." + rightOp.getClass().getName(),e);
+            } catch (PatternSyntaxException e) {
+                throw new IllegalArgumentException("Operator ~ the right-hand operand %s is not a valid regular expression." + rightOp.getClass().getName(), e);
             }
             throw new IllegalArgumentException("Operator ~ requires the right-hand operand to be a regular expression but was " + rightOp.getClass().getName());
         };
